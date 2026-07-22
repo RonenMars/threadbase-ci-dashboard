@@ -15,7 +15,7 @@ export default auth((req) => {
     return NextResponse.next()
   }
 
-  // Webhook is public — validated by HMAC inside the handler
+  // Webhook is public — validated by HMAC inside the handler (see lib/webhook.ts)
   if (pathname === "/api/webhook") return NextResponse.next()
 
   // All other routes require a session
