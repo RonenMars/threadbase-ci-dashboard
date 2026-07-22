@@ -1,26 +1,20 @@
-import { z } from "zod"
 import { and, eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { accounts } from "@/lib/db/schema"
+import { env } from "@/lib/env"
+import type { DispatchInputs } from "@/lib/dispatch-schema"
 
-const REPO = process.env.GITHUB_REPO!
-const WORKFLOW = process.env.GITHUB_WORKFLOW_ID!
+export { dispatchInputsSchema } from "@/lib/dispatch-schema"
+export type { DispatchInputs } from "@/lib/dispatch-schema"
+
+const REPO = env.GITHUB_REPO
+const WORKFLOW = env.GITHUB_WORKFLOW_ID
 const GH_API = "https://api.github.com"
 const GH_HEADERS = (token: string) => ({
   Authorization: `Bearer ${token}`,
   Accept: "application/vnd.github+json",
   "X-GitHub-Api-Version": "2022-11-28",
 })
-
-export const dispatchInputsSchema = z.object({
-  deploy_ref: z.string().min(1),
-  platform: z.enum(["ios", "android", "all"]),
-  target: z.enum(["testflight", "production"]),
-  android_track: z.enum(["alpha", "internal", "beta", "production"]),
-  release_notes: z.string().optional(),
-})
-
-export type DispatchInputs = z.infer<typeof dispatchInputsSchema>
 
 export interface WorkflowRun {
   id: number

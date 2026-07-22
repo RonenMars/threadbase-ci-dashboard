@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { dispatchInputsSchema } from "@/lib/github"
+import { dispatchInputsSchema } from "@/lib/dispatch-schema"
 
 describe("dispatchInputsSchema", () => {
   const valid = {
