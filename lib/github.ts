@@ -77,6 +77,10 @@ export async function triggerDispatch(
           platform: inputs.platform,
           target: inputs.target,
           android_track: inputs.android_track,
+          // deploy.yml checks out `inputs.deploy_ref` (not the dispatch `ref`),
+          // so it has to be passed through as an input too — otherwise every
+          // run would check out the workflow file's default of "main".
+          deploy_ref: inputs.deploy_ref,
           ...(inputs.release_notes ? { release_notes: inputs.release_notes } : {}),
         },
       }),

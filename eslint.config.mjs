@@ -26,6 +26,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "components/ui/**",
     "drizzle/**",
+    ".remember/**",
   ]),
 ]);
 
