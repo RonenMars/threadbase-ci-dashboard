@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { getRuns } from "@/lib/github"
+import { getProject, DEFAULT_PROJECT_ID } from "@/lib/projects"
 import { AppHeader } from "@/components/app-header"
 import { RunList } from "@/components/run-list"
 import type { Role } from "@/lib/roles"
@@ -12,7 +13,7 @@ export default async function HistoryPage() {
 
   let initialRuns: WorkflowRun[] = []
   try {
-    initialRuns = await getRuns(session.user.id)
+    initialRuns = await getRuns(session.user.id, getProject(DEFAULT_PROJECT_ID)!)
   } catch {
     // Render with an empty list; client-side polling will fill it in.
   }

@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth"
-import { getRedis, EVENTS_KEY } from "@/lib/redis"
+import { getRedis, eventsKey } from "@/lib/redis"
+import { getProject, DEFAULT_PROJECT_ID } from "@/lib/projects"
 
 const POLL_INTERVAL_MS = 2000
 const MAX_DURATION_MS = 25_000
@@ -9,6 +10,10 @@ type StoredEvent = { ts: number; data: unknown }
 export async function GET(req: Request) {
   const session = await auth()
   if (!session) return new Response("Unauthorized", { status: 401 })
+
+  const id = new URL(req.url).searchParams.get("project") ?? DEFAULT_PROJECT_ID
+  if (!getProject(id)) return new Response("Unknown project", { status: 400 })
+  const key = eventsKey(id)
 
   const lastEventId = req.headers.get("last-event-id") ?? "0"
   let lastSeen = Number(lastEventId)
@@ -37,7 +42,7 @@ export async function GET(req: Request) {
       }
 
       while (Date.now() < deadline) {
-        const raw = await redis.lrange<StoredEvent>(EVENTS_KEY, 0, 49)
+        const raw = await redis.lrange<StoredEvent>(key, 0, 49)
         const events = raw
           // @upstash/redis auto-deserializes JSON, so entries are already
           // objects; guard against a raw string in case that ever changes.

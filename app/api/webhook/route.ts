@@ -1,5 +1,6 @@
 import { validateGitHubSignature } from "@/lib/webhook"
-import { getRedis, EVENTS_KEY, EVENTS_MAX, EVENTS_TTL } from "@/lib/redis"
+import { getRedis, eventsKey, EVENTS_MAX, EVENTS_TTL } from "@/lib/redis"
+import { projectIdForRepo } from "@/lib/projects"
 import { env } from "@/lib/env"
 
 export async function POST(req: Request) {
@@ -17,8 +18,12 @@ export async function POST(req: Request) {
   if (!redis) return new Response("OK") // Redis not provisioned yet — no-op
 
   const payload = JSON.parse(body)
-  const run = payload.workflow_run
 
+  // Route the event to its project's list; ignore repos not in the registry.
+  const projectId = projectIdForRepo(payload.repository?.full_name ?? "")
+  if (!projectId) return new Response("OK")
+
+  const run = payload.workflow_run
   const entry = JSON.stringify({
     ts: Date.now(),
     data: {
@@ -35,9 +40,10 @@ export async function POST(req: Request) {
     },
   })
 
-  await redis.lpush(EVENTS_KEY, entry)
-  await redis.ltrim(EVENTS_KEY, 0, EVENTS_MAX - 1)
-  await redis.expire(EVENTS_KEY, EVENTS_TTL)
+  const key = eventsKey(projectId)
+  await redis.lpush(key, entry)
+  await redis.ltrim(key, 0, EVENTS_MAX - 1)
+  await redis.expire(key, EVENTS_TTL)
 
   return new Response("OK")
 }

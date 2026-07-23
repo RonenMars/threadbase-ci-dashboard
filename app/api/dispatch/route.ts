@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { dispatchInputsSchema } from "@/lib/dispatch-schema"
 import { triggerDispatch } from "@/lib/github"
+import { getProject, DEFAULT_PROJECT_ID } from "@/lib/projects"
 import { canDeploy } from "@/lib/roles"
 import type { Role } from "@/lib/roles"
 
@@ -15,7 +15,13 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json()
-  const parsed = dispatchInputsSchema.safeParse(body)
+  const id = typeof body.project === "string" ? body.project : DEFAULT_PROJECT_ID
+  const project = getProject(id)
+  if (!project) {
+    return NextResponse.json({ error: `Unknown project: ${id}` }, { status: 400 })
+  }
+
+  const parsed = project.schema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Invalid input", details: parsed.error.flatten() },
@@ -24,7 +30,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    await triggerDispatch(session.user.id, parsed.data)
+    await triggerDispatch(session.user.id, project, parsed.data)
     return NextResponse.json({ ok: true })
   } catch (err) {
     return NextResponse.json(

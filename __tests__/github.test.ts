@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
-import { dispatchInputsSchema } from "@/lib/dispatch-schema"
+import { mobileDispatchSchema as dispatchInputsSchema } from "@/lib/dispatch-schema"
 
-describe("dispatchInputsSchema", () => {
+describe("mobileDispatchSchema", () => {
   const valid = {
     deploy_ref: "main",
     platform: "ios" as const,
