@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { env } from "@/lib/env"
+import type { ProjectId } from "@/lib/project-options"
 import {
   mobileDispatchSchema,
   streamerDispatchSchema,
@@ -17,7 +18,8 @@ import type {
  * workflow_dispatch payload. repo/workflow come from env so secrets/overrides
  * stay in config; the *shape* lives here because it differs per project.
  */
-export type ProjectId = "tb-mobile" | "tb-streamer"
+export { DEFAULT_PROJECT_ID } from "@/lib/project-options"
+export type { ProjectId } from "@/lib/project-options"
 
 type DispatchBody = { ref: string; inputs: Record<string, string> }
 
@@ -74,8 +76,6 @@ const REGISTRY: Record<ProjectId, Project> = {
 }
 
 export const PROJECTS: Project[] = [mobile, streamer]
-export const DEFAULT_PROJECT_ID: ProjectId = "tb-mobile"
-
 export function isProjectId(id: string): id is ProjectId {
   return id === "tb-mobile" || id === "tb-streamer"
 }
