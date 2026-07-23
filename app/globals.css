@@ -8,7 +8,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -39,6 +39,12 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  /* Threadbase brand tokens exposed as Tailwind colors */
+  --color-live: var(--tb-amber-400);
+  --color-live-foreground: #2a1a04;
+  --color-success: var(--tb-success-400);
+  --color-warning: var(--tb-warning-400);
+  --color-danger: var(--tb-danger-400);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -48,73 +54,114 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* =========================================================
+   Threadbase Design System — raw palette + tokens
+   Source: claude.ai design project "Threadbase Design System"
+   ========================================================= */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* Midnight / surface scale */
+  --tb-ink-0: #04070b;
+  --tb-ink-1: #070b11;
+  --tb-ink-2: #0b1220;
+  --tb-ink-3: #0f1a2c;
+  --tb-ink-4: #152238;
+  --tb-ink-5: #1a2d47;
+  --tb-ink-6: #243a59;
+  --tb-ink-7: #2a4060;
+
+  /* Foreground */
+  --tb-fg-0: #f4f7fb;
+  --tb-fg-1: #d6e0ee;
+  --tb-fg-2: #9fb0c8;
+  --tb-fg-3: #6c809b;
+  --tb-fg-4: #4a5b76;
+
+  /* Brand blue — the "thread" color */
+  --tb-blue-300: #7fb6ff;
+  --tb-blue-400: #63b3ff;
+  --tb-blue-500: #4a9ef0;
+
+  /* Brand amber — the "live / active" color */
+  --tb-amber-400: #f08a24;
+  --tb-amber-500: #d6770e;
+
+  /* Status */
+  --tb-success-400: #4ade80;
+  --tb-warning-400: #f5a14a;
+  --tb-danger-400: #ff6b6b;
+
+  --color-focus-ring: rgba(99, 179, 255, 0.55);
+  --shadow-glow-amber: 0 0 0 1px rgba(240, 138, 36, 0.35), 0 0 22px rgba(240, 138, 36, 0.30);
+
+  /* Signature 32px grid background from the app icon */
+  --grid-bg:
+    linear-gradient(to right, rgba(26, 45, 71, 0.45) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(to bottom, rgba(26, 45, 71, 0.45) 1px, transparent 1px) 0 0 / 32px 32px;
+
+  /* ---- shadcn semantic variables, remapped to Threadbase (dark by default) ---- */
+  --background: var(--tb-ink-1);
+  --foreground: var(--tb-fg-0);
+  --card: var(--tb-ink-2);
+  --card-foreground: var(--tb-fg-0);
+  --popover: var(--tb-ink-2);
+  --popover-foreground: var(--tb-fg-0);
+  --primary: var(--tb-blue-400);
+  --primary-foreground: var(--tb-ink-1);
+  --secondary: var(--tb-ink-3);
+  --secondary-foreground: var(--tb-fg-0);
+  --muted: var(--tb-ink-3);
+  --muted-foreground: var(--tb-fg-2);
+  --accent: var(--tb-ink-3);
+  --accent-foreground: var(--tb-fg-0);
+  --destructive: var(--tb-danger-400);
+  --border: var(--tb-ink-5);
+  --input: var(--tb-ink-5);
+  --ring: var(--tb-blue-400);
+  --chart-1: var(--tb-blue-400);
+  --chart-2: var(--tb-amber-400);
+  --chart-3: var(--tb-success-400);
+  --chart-4: var(--tb-danger-400);
+  --chart-5: var(--tb-fg-3);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--tb-ink-2);
+  --sidebar-foreground: var(--tb-fg-0);
+  --sidebar-primary: var(--tb-blue-400);
+  --sidebar-primary-foreground: var(--tb-ink-1);
+  --sidebar-accent: var(--tb-ink-3);
+  --sidebar-accent-foreground: var(--tb-fg-0);
+  --sidebar-border: var(--tb-ink-5);
+  --sidebar-ring: var(--tb-blue-400);
 }
 
+/* This design system is dark-first; .dark maps to the same tokens so shadcn's
+   dark: variants and the base :root render identically. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--tb-ink-1);
+  --foreground: var(--tb-fg-0);
+  --card: var(--tb-ink-2);
+  --card-foreground: var(--tb-fg-0);
+  --popover: var(--tb-ink-2);
+  --popover-foreground: var(--tb-fg-0);
+  --primary: var(--tb-blue-400);
+  --primary-foreground: var(--tb-ink-1);
+  --secondary: var(--tb-ink-3);
+  --secondary-foreground: var(--tb-fg-0);
+  --muted: var(--tb-ink-3);
+  --muted-foreground: var(--tb-fg-2);
+  --accent: var(--tb-ink-3);
+  --accent-foreground: var(--tb-fg-0);
+  --destructive: var(--tb-danger-400);
+  --border: var(--tb-ink-5);
+  --input: var(--tb-ink-5);
+  --ring: var(--tb-blue-400);
+  --sidebar: var(--tb-ink-2);
+  --sidebar-foreground: var(--tb-fg-0);
+  --sidebar-primary: var(--tb-blue-400);
+  --sidebar-primary-foreground: var(--tb-ink-1);
+  --sidebar-accent: var(--tb-ink-3);
+  --sidebar-accent-foreground: var(--tb-fg-0);
+  --sidebar-border: var(--tb-ink-5);
+  --sidebar-ring: var(--tb-blue-400);
 }
 
 @layer base {
@@ -126,5 +173,21 @@
   }
   html {
     @apply font-sans;
+    color-scheme: dark;
   }
+  ::selection {
+    background: rgba(99, 179, 255, 0.35);
+    color: var(--tb-fg-0);
+  }
+}
+
+/* Signature grid background — apply to a page shell with class="tb-grid" */
+.tb-grid {
+  background-color: var(--tb-ink-1);
+  background-image: var(--grid-bg);
+}
+
+/* Live/active glow used on in-progress deploy actions */
+.tb-glow-amber {
+  box-shadow: var(--shadow-glow-amber);
 }

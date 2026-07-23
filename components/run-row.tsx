@@ -1,37 +1,29 @@
 import { ArrowSquareOutIcon } from "@phosphor-icons/react"
-import { Badge } from "@/components/ui/badge"
+import { StatusPill } from "@/components/status-pill"
 import type { WorkflowRun } from "@/lib/github"
-
-function statusBadge(run: WorkflowRun): React.JSX.Element {
-  if (run.status === "completed") {
-    return run.conclusion === "success"
-      ? <Badge variant="default" className="bg-green-600">success</Badge>
-      : <Badge variant="destructive">{run.conclusion ?? "failed"}</Badge>
-  }
-  if (run.status === "in_progress") {
-    return <Badge variant="secondary" className="animate-pulse">in progress</Badge>
-  }
-  return <Badge variant="outline">{run.status}</Badge>
-}
 
 type RunRowProps = Readonly<{ run: WorkflowRun }>
 
 export function RunRow({ run }: RunRowProps): React.JSX.Element {
   return (
-    <tr className="border-b">
-      <td className="py-2 pr-4 font-mono text-sm">#{run.run_number}</td>
-      <td className="py-2 pr-4 text-sm">{run.head_branch}</td>
-      <td className="py-2 pr-4">{statusBadge(run)}</td>
-      <td className="py-2 pr-4 text-sm text-muted-foreground">{run.actor ?? "—"}</td>
-      <td className="py-2 pr-4 text-sm text-muted-foreground">
+    <tr className="border-b border-border transition-colors hover:bg-secondary/40">
+      <td className="py-2.5 pr-4 font-mono text-sm text-muted-foreground">#{run.run_number}</td>
+      <td className="py-2.5 pr-4">
+        <span className="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 font-mono text-xs text-foreground/90">
+          {run.head_branch}
+        </span>
+      </td>
+      <td className="py-2.5 pr-4"><StatusPill run={run} /></td>
+      <td className="py-2.5 pr-4 text-sm text-muted-foreground">{run.actor ?? "—"}</td>
+      <td className="py-2.5 pr-4 text-sm text-muted-foreground">
         {new Date(run.created_at).toLocaleString()}
       </td>
-      <td className="py-2">
+      <td className="py-2.5">
         <a
           href={run.html_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-sm text-blue-600 underline"
+          className="inline-flex items-center gap-1 text-sm text-(--tb-blue-400) transition-colors hover:text-(--tb-blue-300)"
         >
           View
           <ArrowSquareOutIcon />
