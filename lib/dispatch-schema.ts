@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { STREAMER_DEPLOYMENT_ENV_VALUES } from "@/lib/project-options"
 
 /**
  * Kept separate from lib/github.ts so that validating dispatch inputs (client
@@ -18,6 +19,7 @@ export const mobileDispatchSchema = z.object({
 
 export const streamerDispatchSchema = z.object({
   deploy_ref: z.string().min(1),
+  deployment_env: z.enum(STREAMER_DEPLOYMENT_ENV_VALUES),
   publish: z.boolean(),
 })
 

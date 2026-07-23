@@ -81,12 +81,14 @@ describe("triggerDispatch payload", () => {
     it("targets the streamer repo + workflow and serializes publish", async () => {
       await triggerDispatch("user-1", streamer, {
         deploy_ref: "main",
+        deployment_env: "fly-prod",
         publish: true,
       })
       const { url, body } = lastRequest()
       expect(url).toContain("owner/streamer/actions/workflows/release.yml")
       expect(body.ref).toBe("main")
       // workflow_dispatch inputs are strings, so the boolean is serialized.
+      expect(body.inputs.deployment_env).toBe("fly-prod")
       expect(body.inputs.publish).toBe("true")
     })
   })

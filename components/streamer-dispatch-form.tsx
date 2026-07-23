@@ -12,9 +12,14 @@ import { RefCombobox } from "@/components/ref-combobox"
 import { useRefs, submitDispatch } from "@/components/dispatch-shared"
 import type { SubmitStatus } from "@/components/dispatch-shared"
 import { streamerDispatchSchema } from "@/lib/dispatch-schema"
+import { STREAMER_DEPLOYMENT_ENVIRONMENTS } from "@/lib/project-options"
 import type { StreamerDispatchInputs } from "@/lib/dispatch-schema"
 
-export function StreamerDispatchForm(): React.JSX.Element {
+type StreamerDispatchFormProps = Readonly<{ includeLocalEnvironments: boolean }>
+
+export function StreamerDispatchForm({
+  includeLocalEnvironments,
+}: StreamerDispatchFormProps): React.JSX.Element {
   const [status, setStatus] = useState<SubmitStatus>("idle")
   const [errorMessage, setErrorMessage] = useState("")
 
@@ -23,7 +28,7 @@ export function StreamerDispatchForm(): React.JSX.Element {
     formState: { isSubmitting },
   } = useForm<StreamerDispatchInputs>({
     resolver: zodResolver(streamerDispatchSchema),
-    defaultValues: { deploy_ref: "", publish: false },
+    defaultValues: { deploy_ref: "", deployment_env: "fly-demo", publish: false },
   })
 
   const { refs, loading: refsLoading } = useRefs("tb-streamer", (ref) =>
@@ -59,6 +64,28 @@ export function StreamerDispatchForm(): React.JSX.Element {
               disabled={refsLoading}
               loading={refsLoading}
             />
+          )}
+        />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="deployment_env">Deployment environment</Label>
+        <Controller
+          control={control}
+          name="deployment_env"
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger id="deployment_env" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {STREAMER_DEPLOYMENT_ENVIRONMENTS
+                  .filter((environment) => includeLocalEnvironments || !environment.localOnly)
+                  .map((environment) => (
+                    <SelectItem key={environment.value} value={environment.value}>
+                      {environment.label}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
           )}
         />
       </div>

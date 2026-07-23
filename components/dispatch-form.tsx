@@ -6,7 +6,9 @@ import { MobileDispatchForm } from "@/components/mobile-dispatch-form"
 import { StreamerDispatchForm } from "@/components/streamer-dispatch-form"
 import { DEFAULT_PROJECT_ID, type ProjectId } from "@/lib/project-options"
 
-export function DispatchForm(): React.JSX.Element {
+type DispatchFormProps = Readonly<{ includeLocalEnvironments: boolean }>
+
+export function DispatchForm({ includeLocalEnvironments }: DispatchFormProps): React.JSX.Element {
   const [project, setProject] = useState<ProjectId>(DEFAULT_PROJECT_ID)
 
   return (
@@ -19,7 +21,10 @@ export function DispatchForm(): React.JSX.Element {
         {/* key remounts the form on project switch so its default ref/inputs reset. */}
         {project === "tb-mobile"
           ? <MobileDispatchForm key="tb-mobile" />
-          : <StreamerDispatchForm key="tb-streamer" />}
+          : <StreamerDispatchForm
+              key="tb-streamer"
+              includeLocalEnvironments={includeLocalEnvironments}
+            />}
       </CardContent>
     </Card>
   )

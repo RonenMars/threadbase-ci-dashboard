@@ -18,7 +18,7 @@ export default async function DashboardPage() {
         <div className="flex w-full max-w-lg flex-col items-center">
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Deploy</p>
           <h1 className="mb-6 text-2xl font-semibold tracking-[-0.02em]">Trigger a workflow</h1>
-          <DispatchForm />
+          <DispatchForm includeLocalEnvironments={process.env.VERCEL !== "1"} />
         </div>
       </main>
     </>

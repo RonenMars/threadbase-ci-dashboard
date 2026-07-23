@@ -63,7 +63,10 @@ const streamer: ProjectDef<StreamerDispatchInputs> = {
     ref: inputs.deploy_ref,
     // release.yml gates the Fly.io publish on the `publish` boolean; GitHub
     // workflow_dispatch inputs are always strings, so serialize it.
-    inputs: { publish: String(inputs.publish) },
+    inputs: {
+      deployment_env: inputs.deployment_env,
+      publish: String(inputs.publish),
+    },
   }),
 }
 
