@@ -9,7 +9,7 @@ This is the crux — they are not the same shape, and a naive "second repo" won'
 
 | | tb-mobile | tb-streamer |
 |---|---|---|
-| Repo | `RonenMars/threadbase-mobile` | `RonenMars/tb-streamer` |
+| Repo | [`RonenMars/threadbase-mobile`](https://github.com/RonenMars/threadbase-mobile) | [`RonenMars/threadbase-streamer`](https://github.com/RonenMars/threadbase-streamer) |
 | Workflow | `deploy.yml` | `release.yml` |
 | Target | App Store / Play Store (Fastlane) | Fly.io (`threadbase` prod, `threadbase-demo`) |
 | Dispatch inputs | `platform`, `target`, `android_track`, `deploy_ref`, `release_notes` | `publish` (boolean), plus the git ref |
@@ -33,7 +33,7 @@ Replace the two hardcoded env vars with a **projects registry** — a small type
 {
   id: "tb-streamer",
   label: "Threadbase Streamer",
-  repo: "RonenMars/tb-streamer",
+  repo: "RonenMars/threadbase-streamer",
   workflow: "release.yml",
   inputsSchema: streamerDispatchSchema, // { ref, publish: boolean }
   formComponent: StreamerDispatchForm,
