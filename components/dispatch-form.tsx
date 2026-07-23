@@ -10,6 +10,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { RefCombobox } from "@/components/ref-combobox"
 import { dispatchInputsSchema } from "@/lib/dispatch-schema"
 import type { DispatchInputs } from "@/lib/dispatch-schema"
 
@@ -93,34 +94,15 @@ export function DispatchForm(): React.JSX.Element {
               control={control}
               name="deploy_ref"
               render={({ field }) => (
-                <Select
-                  key={refsLoading ? "loading" : "ready"}
-                  value={field.value || undefined}
-                  onValueChange={field.onChange}
+                <RefCombobox
+                  id="deploy_ref"
+                  branches={refs.branches}
+                  tags={refs.tags}
+                  value={field.value}
+                  onChange={field.onChange}
                   disabled={refsLoading}
-                >
-                  <SelectTrigger id="deploy_ref" className="w-full">
-                    <SelectValue placeholder={refsLoading ? "Loading…" : "Select ref"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {refs.branches.length > 0 && (
-                      <>
-                        <div className="px-2 py-1 text-xs text-muted-foreground">Branches</div>
-                        {refs.branches.map((b) => (
-                          <SelectItem key={`branch:${b}`} value={b}>{b}</SelectItem>
-                        ))}
-                      </>
-                    )}
-                    {refs.tags.length > 0 && (
-                      <>
-                        <div className="px-2 py-1 text-xs text-muted-foreground">Tags</div>
-                        {refs.tags.map((t) => (
-                          <SelectItem key={`tag:${t}`} value={t}>{t}</SelectItem>
-                        ))}
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
+                  loading={refsLoading}
+                />
               )}
             />
           </div>
