@@ -1,7 +1,8 @@
 import { Redis } from "@upstash/redis"
 import { env } from "@/lib/env"
 
-export const EVENTS_KEY = "ci:events"
+/** Per-project event list so the SSE stream and history filter by project. */
+export const eventsKey = (projectId: string) => `ci:events:${projectId}`
 export const EVENTS_MAX = 100
 export const EVENTS_TTL = 86400 // 24h
 

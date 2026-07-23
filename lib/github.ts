@@ -1,14 +1,11 @@
 import { and, eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { accounts } from "@/lib/db/schema"
-import { env } from "@/lib/env"
+import type { Project } from "@/lib/projects"
 import type { DispatchInputs } from "@/lib/dispatch-schema"
 
-export { dispatchInputsSchema } from "@/lib/dispatch-schema"
 export type { DispatchInputs } from "@/lib/dispatch-schema"
 
-const REPO = env.GITHUB_REPO
-const WORKFLOW = env.GITHUB_WORKFLOW_ID
 const GH_API = "https://api.github.com"
 const GH_HEADERS = (token: string) => ({
   Authorization: `Bearer ${token}`,
@@ -39,14 +36,15 @@ export async function getGitHubToken(userId: string): Promise<string> {
 }
 
 export async function getRefs(
-  userId: string
+  userId: string,
+  project: Project
 ): Promise<{ branches: string[]; tags: string[] }> {
   const token = await getGitHubToken(userId)
   const headers = GH_HEADERS(token)
 
   const [branchesRes, tagsRes] = await Promise.all([
-    fetch(`${GH_API}/repos/${REPO}/branches?per_page=100`, { headers }),
-    fetch(`${GH_API}/repos/${REPO}/tags?per_page=100`, { headers }),
+    fetch(`${GH_API}/repos/${project.repo}/branches?per_page=100`, { headers }),
+    fetch(`${GH_API}/repos/${project.repo}/tags?per_page=100`, { headers }),
   ])
 
   if (!branchesRes.ok) throw new Error(`GitHub branches error: ${branchesRes.status}`)
@@ -63,39 +61,34 @@ export async function getRefs(
 
 export async function triggerDispatch(
   userId: string,
+  project: Project,
   inputs: DispatchInputs
 ): Promise<void> {
   const token = await getGitHubToken(userId)
+  // The route validated `inputs` against this project's schema, so the cast is
+  // safe: buildDispatchBody expects exactly that project's input shape.
+  const body = (project.buildDispatchBody as (i: DispatchInputs) => unknown)(inputs)
   const res = await fetch(
-    `${GH_API}/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`,
+    `${GH_API}/repos/${project.repo}/actions/workflows/${project.workflow}/dispatches`,
     {
       method: "POST",
       headers: { ...GH_HEADERS(token), "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ref: inputs.deploy_ref,
-        inputs: {
-          platform: inputs.platform,
-          target: inputs.target,
-          android_track: inputs.android_track,
-          // deploy.yml checks out `inputs.deploy_ref` (not the dispatch `ref`),
-          // so it has to be passed through as an input too — otherwise every
-          // run would check out the workflow file's default of "main".
-          deploy_ref: inputs.deploy_ref,
-          ...(inputs.release_notes ? { release_notes: inputs.release_notes } : {}),
-        },
-      }),
+      body: JSON.stringify(body),
     }
   )
   if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`GitHub dispatch error: ${res.status} ${body}`)
+    const text = await res.text()
+    throw new Error(`GitHub dispatch error: ${res.status} ${text}`)
   }
 }
 
-export async function getRuns(userId: string): Promise<WorkflowRun[]> {
+export async function getRuns(
+  userId: string,
+  project: Project
+): Promise<WorkflowRun[]> {
   const token = await getGitHubToken(userId)
   const res = await fetch(
-    `${GH_API}/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=20`,
+    `${GH_API}/repos/${project.repo}/actions/workflows/${project.workflow}/runs?per_page=20`,
     { headers: GH_HEADERS(token) }
   )
   if (!res.ok) throw new Error(`GitHub runs error: ${res.status}`)

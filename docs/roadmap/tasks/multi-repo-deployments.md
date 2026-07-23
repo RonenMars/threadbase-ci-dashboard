@@ -1,6 +1,6 @@
 # Multi-repo deployments: manage tb-streamer alongside tb-mobile
 
-**Status:** planned — not yet implemented.
+**Status:** implemented — projects registry, per-project dispatch forms, and project-scoped history/webhooks are live.
 
 **Goal:** the dashboard currently manages deploys for one repo (`tb-mobile`, hardcoded via `GITHUB_REPO` / `GITHUB_WORKFLOW_ID`). Extend it to also manage **`tb-streamer`** deploys, so the operator picks which project to deploy and sees each project's run history.
 
