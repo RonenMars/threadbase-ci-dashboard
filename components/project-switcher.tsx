@@ -2,8 +2,7 @@
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { PROJECTS } from "@/lib/projects"
-import type { ProjectId } from "@/lib/projects"
+import { PROJECT_OPTIONS, type ProjectId } from "@/lib/project-options"
 
 type ProjectSwitcherProps = Readonly<{
   value: ProjectId
@@ -15,7 +14,7 @@ export function ProjectSwitcher({ value, onChange }: ProjectSwitcherProps): Reac
     <Select value={value} onValueChange={(v) => onChange(v as ProjectId)}>
       <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
       <SelectContent>
-        {PROJECTS.map((p) => (
+        {PROJECT_OPTIONS.map((p) => (
           <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
         ))}
       </SelectContent>

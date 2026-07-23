@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProjectSwitcher } from "@/components/project-switcher"
 import { MobileDispatchForm } from "@/components/mobile-dispatch-form"
 import { StreamerDispatchForm } from "@/components/streamer-dispatch-form"
-import { DEFAULT_PROJECT_ID } from "@/lib/projects"
-import type { ProjectId } from "@/lib/projects"
+import { DEFAULT_PROJECT_ID, type ProjectId } from "@/lib/project-options"
 
 export function DispatchForm(): React.JSX.Element {
   const [project, setProject] = useState<ProjectId>(DEFAULT_PROJECT_ID)

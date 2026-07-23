@@ -2,8 +2,7 @@
 import { useEffect, useRef, useState } from "react"
 import { RunRow } from "@/components/run-row"
 import { ProjectSwitcher } from "@/components/project-switcher"
-import { DEFAULT_PROJECT_ID } from "@/lib/projects"
-import type { ProjectId } from "@/lib/projects"
+import { DEFAULT_PROJECT_ID, type ProjectId } from "@/lib/project-options"
 import type { WorkflowRun } from "@/lib/github"
 
 const POLL_FALLBACK_MS = 10_000
