@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-23T00:00:00Z",
+  "title": "Design System: Threadbase CI Dashboard",
+  "extensions": {
+    "colorMeta": {
+      "blue-400": { "role": "primary", "displayName": "Thread Blue", "canonical": "#63b3ff", "tonalRamp": ["#0f2a47", "#163f6a", "#1f5fa0", "#2f7fcc", "#4a9ef0", "#63b3ff", "#7fb6ff", "#c9e0ff"] },
+      "amber-400": { "role": "secondary", "displayName": "Live Amber", "canonical": "#f08a24", "tonalRamp": ["#7a4204", "#a85a06", "#d6770e", "#f08a24", "#f5a14a", "#ffc488", "#ffdcb3", "#fff3e3"] },
+      "ink-1": { "role": "neutral", "displayName": "Midnight Canvas", "canonical": "#070b11", "tonalRamp": ["#04070b", "#070b11", "#0b1220", "#0f1a2c", "#152238", "#1a2d47", "#243a59", "#2a4060"] },
+      "success-400": { "role": "status", "displayName": "Deploy Green", "canonical": "#4ade80", "tonalRamp": ["#14532d", "#166534", "#15803d", "#16a34a", "#22c55e", "#4ade80", "#86efac", "#bbf7d0"] },
+      "danger-400": { "role": "status", "displayName": "Fail Red", "canonical": "#ff6b6b", "tonalRamp": ["#7f1d1d", "#991b1b", "#b91c1c", "#d23030", "#ef4444", "#ff6b6b", "#ff9b9b", "#fecaca"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page titles only." },
+      "eyebrow": { "displayName": "Eyebrow", "purpose": "The one deliberate small-caps label — register word above a title, and table headers." },
+      "mono": { "displayName": "Mono", "purpose": "Machine identifiers: branches, tags, run numbers, tokens." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 4px 12px rgba(0,0,0,0.45)", "purpose": "Elevated panels (history table) floating on the canvas." },
+      { "name": "overlay", "value": "0 14px 40px rgba(0,0,0,0.55)", "purpose": "Sign-in card and modal-level surfaces." },
+      { "name": "glow-amber", "value": "0 0 0 1px rgba(240,138,36,0.35), 0 0 22px rgba(240,138,36,0.30)", "purpose": "The one expressive shadow — attaches only to a live/amber action." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.2, 0.7, 0.2, 1)", "purpose": "Default easing for state transitions." },
+      { "name": "dur-fast", "value": "120ms", "purpose": "Hover/press feedback." },
+      { "name": "pulse", "value": "1.6s ease-in-out infinite", "purpose": "The live status dot's breathing pulse." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The operator's main action (Run Workflow). Thread-blue fill, dark text.",
+      "html": "<button class=\"ds-btn-primary\">Run Workflow</button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 14px; border:1px solid transparent; border-radius:8px; background:#63b3ff; color:#070b11; font:600 13px/1 'Inter',sans-serif; letter-spacing:-0.005em; cursor:pointer; transition:background .12s cubic-bezier(0.2,0.7,0.2,1); } .ds-btn-primary:hover { background:#7fb6ff; } .ds-btn-primary:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(99,179,255,0.55); }"
+    },
+    {
+      "name": "Live Button",
+      "kind": "button",
+      "refersTo": "button-live",
+      "description": "Go-live / resume-now action. Amber fill with glow. Rare by rule.",
+      "html": "<button class=\"ds-btn-live\"><span class=\"ds-dot\"></span>Resume in terminal</button>",
+      "css": ".ds-btn-live { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 14px; border:0; border-radius:8px; background:#f08a24; color:#2a1a04; font:600 13px/1 'Inter',sans-serif; cursor:pointer; box-shadow:0 0 0 1px rgba(240,138,36,0.35), 0 0 22px rgba(240,138,36,0.30); } .ds-btn-live .ds-dot { width:6px; height:6px; border-radius:50%; background:#2a1a04; }"
+    },
+    {
+      "name": "Status Pill",
+      "kind": "chip",
+      "refersTo": "pill-status",
+      "description": "The signature component. Dot + uppercase tracked label on a hue-tinted background. Amber pulses for live.",
+      "html": "<span class=\"ds-pill ds-pill-live\"><span class=\"ds-pill-dot\"></span>live</span>",
+      "css": ".ds-pill { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; font:600 11px/1 'Inter',sans-serif; letter-spacing:0.08em; text-transform:uppercase; } .ds-pill-dot { width:6px; height:6px; border-radius:50%; } .ds-pill-live { background:rgba(240,138,36,0.14); color:#f08a24; } .ds-pill-live .ds-pill-dot { background:#f08a24; box-shadow:0 0 8px #f08a24; animation:ds-pulse 1.6s cubic-bezier(0.2,0.7,0.2,1) infinite; } @keyframes ds-pulse { 0%,100%{opacity:.4} 50%{opacity:1} }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Ink-2 field with blue focus ring and a trailing kbd hint.",
+      "html": "<div class=\"ds-field\"><input placeholder=\"Profile name\" value=\"work-laptop\"/><span class=\"ds-kbd\">⌘ K</span></div>",
+      "css": ".ds-field { display:flex; align-items:center; gap:10px; height:40px; padding:0 12px; background:#0b1220; border:1px solid #1a2d47; border-radius:8px; } .ds-field:focus-within { border-color:#63b3ff; box-shadow:0 0 0 3px rgba(99,179,255,0.55); } .ds-field input { flex:1; background:transparent; border:0; outline:0; color:#f4f7fb; font:400 14px/1 'Inter',sans-serif; } .ds-kbd { margin-left:auto; padding:2px 6px; background:#0f1a2c; border:1px solid #1a2d47; border-bottom-width:2px; border-radius:4px; color:#9fb0c8; font:500 11px/14px 'JetBrains Mono',monospace; }"
+    },
+    {
+      "name": "App Header / Nav",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Sticky top header on ink-4 with backdrop blur; brand mark, role-gated links, user identity.",
+      "html": "<header class=\"ds-nav\"><span class=\"ds-brand\">Threadbase CI</span><a class=\"ds-nav-link ds-active\">Deploy</a><a class=\"ds-nav-link\">History</a></header>",
+      "css": ".ds-nav { display:flex; align-items:center; gap:16px; height:56px; padding:0 24px; background:rgba(21,34,56,0.8); backdrop-filter:blur(8px); border-bottom:1px solid #1a2d47; } .ds-brand { color:#f4f7fb; font:600 14px/1 'Inter',sans-serif; letter-spacing:-0.01em; } .ds-nav-link { padding:6px 12px; border-radius:6px; color:#9fb0c8; font:400 14px/1 'Inter',sans-serif; text-decoration:none; transition:background .12s, color .12s; } .ds-nav-link:hover, .ds-nav-link.ds-active { background:#0f1a2c; color:#f4f7fb; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Ink-2 surface, hairline border, shadow only when floating on the canvas.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Trigger Deploy</h3></div>",
+      "css": ".ds-card { padding:16px; background:#0b1220; border:1px solid #1a2d47; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.45); } .ds-card-title { margin:0; color:#f4f7fb; font:600 16px/1 'Inter',sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Terminal Next Door",
+    "overview": "Threadbase CI lives next to the developer's terminal and code editor, and it dresses for that company. The surface is a near-black midnight ground carrying a faint 32px grid — the same grid stamped into the product's app icon — so the console reads as an instrument panel, not a marketing page. Two brand signals do the emotional work: a cyan thread-blue for anything the operator commands, and a warm live-amber reserved for the single idea of now — an in-flight deploy, an active build. This is a product register: the design serves the task. Color is spent, not sprayed. The system explicitly rejects the SaaS-marketing dialect: no cream-and-navy gradients, no glassmorphic hero cards, no drop-shadowed pastel dashboards.",
+    "keyCharacteristics": [
+      "Dark-first, IDE-adjacent: midnight ink surfaces under a faint blueprint grid.",
+      "Two-signal color economy: thread-blue for control, live-amber for now.",
+      "Inter for UI, JetBrains Mono for identifiers (branches, run numbers, tokens).",
+      "Status is a pill with a dot, never a bare word.",
+      "Restraint over decoration: flat surfaces, hairline borders, glow only where it means something."
+    ],
+    "rules": [
+      { "name": "The Two-Signal Rule", "body": "Only two hues ever carry brand meaning: blue for control, amber for now. If a third accent shows up 'for variety,' it's wrong — reach for the ink scale or a status hue instead.", "section": "colors" },
+      { "name": "The Amber-Is-Now Rule", "body": "Amber means exactly one thing: something is happening right now. Never use it decoratively, never for a resting state.", "section": "colors" },
+      { "name": "The Mono-For-Machines Rule", "body": "Anything a machine produced or owns — a branch, a tag, a run number, a token count — is set in JetBrains Mono. Anything a human reads as prose is Inter.", "section": "typography" },
+      { "name": "The Flat-Rest Rule", "body": "Surfaces are flat at rest, separated by tone and hairline. A shadow is a response — to floating above the canvas, or to being live — never ambient polish.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the canvas dark (#070b11) with the 32px blueprint grid; it is the identity.",
+      "Do set every machine identifier — branch, tag, run number, token — in JetBrains Mono.",
+      "Do render status as a dot-plus-pill with an uppercase tracked label, tinted to its own hue.",
+      "Do reserve amber strictly for 'now' — the live/in-progress state and go-live actions — and let it glow.",
+      "Do separate surfaces with the ink scale and 1px hairlines first; add a shadow only when a surface truly floats.",
+      "Do verify body text clears 4.5:1 on ink surfaces; push toward foreground-0 when close."
+    ],
+    "donts": [
+      "Don't introduce a third brand accent. Blue controls, amber is now, status hues carry state — nothing else.",
+      "Don't use amber for a resting or decorative element; it must mean something is happening.",
+      "Don't ship the SaaS-marketing dialect: no cream/sand backgrounds, no navy-and-gold, no gradient text, no glassmorphic hero cards, no drop-shadow-on-every-card.",
+      "Don't pair Inter with a second similar sans; the only type contrast is Inter-vs-JetBrains-Mono.",
+      "Don't use a border-left/border-right colored stripe as an accent on cards, rows, or alerts — full borders or background tints only.",
+      "Don't nest cards, and don't render a status as a bare uncolored word."
+    ]
+  }
+}

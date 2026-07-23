@@ -1,18 +1,26 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { canDeploy } from "@/lib/roles"
+import { AppHeader } from "@/components/app-header"
 import { DispatchForm } from "@/components/dispatch-form"
 import type { Role } from "@/lib/roles"
 
 export default async function DashboardPage() {
   const session = await auth()
   if (!session) redirect("/")
-  if (!canDeploy(session.user.role as Role)) redirect("/history")
+  const role = session.user.role as Role
+  if (!canDeploy(role)) redirect("/history")
 
   return (
-    <main className="min-h-screen p-8">
-      <h1 className="mb-6 text-2xl font-bold">Deploy</h1>
-      <DispatchForm />
-    </main>
+    <>
+      <AppHeader role={role} name={session.user.name ?? null} image={session.user.image ?? null} />
+      <main className="flex w-full flex-1 flex-col items-center px-6 py-12">
+        <div className="flex w-full max-w-lg flex-col items-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Deploy</p>
+          <h1 className="mb-6 text-2xl font-semibold tracking-[-0.02em]">Trigger a workflow</h1>
+          <DispatchForm />
+        </div>
+      </main>
+    </>
   )
 }
