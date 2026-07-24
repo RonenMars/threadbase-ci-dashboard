@@ -111,15 +111,15 @@ export function RunList({ initialRuns }: RunListProps): React.JSX.Element {
         <p className="text-muted-foreground">No recent runs.</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border bg-card p-4 shadow-[0_4px_12px_rgba(0,0,0,0.45)]">
-          <table className="w-full text-left">
+          <table className="w-full table-fixed text-left">
             <thead>
               <tr className="border-b border-border text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                <th className="pb-2 pr-4 font-semibold">#</th>
-                <th className="pb-2 pr-4 font-semibold">Branch / Tag</th>
-                <th className="pb-2 pr-4 font-semibold">Status</th>
-                <th className="pb-2 pr-4 font-semibold">Triggered by</th>
-                <th className="pb-2 pr-4 font-semibold">Started</th>
-                <th className="pb-2 font-semibold">Link</th>
+                <th className="w-1/6 pb-2 pr-4 font-semibold">#</th>
+                <th className="w-1/6 pb-2 pr-4 font-semibold">Branch / Tag</th>
+                <th className="w-1/6 pb-2 pr-4 font-semibold">Status</th>
+                <th className="w-1/6 pb-2 pr-4 font-semibold">Triggered by</th>
+                <th className="w-1/6 pb-2 pr-4 font-semibold">Started</th>
+                <th className="w-1/6 pb-2 font-semibold">Link</th>
               </tr>
             </thead>
             <tbody>
