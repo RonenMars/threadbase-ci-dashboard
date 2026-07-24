@@ -83,6 +83,16 @@ describe("AppHeader mobile nav", () => {
     })
   })
 
+  it("portals the panel to document.body so backdrop-blur on the header cannot trap it", async () => {
+    render(<AppHeader role="admin" name="Ronen" image={null} />)
+
+    fireEvent.click(screen.getByLabelText("Open menu"))
+
+    const mobileNav = await screen.findByRole("navigation", { name: "Mobile" })
+    expect(mobileNav.closest("header")).toBeNull()
+    expect(document.body.contains(mobileNav)).toBe(true)
+  })
+
   it("closes when a panel link is clicked", async () => {
     render(<MobileNav role="viewer" name="Viewer" image={null} />)
 

@@ -13,8 +13,8 @@ type AppHeaderProps = Readonly<{
 
 export function AppHeader({ role, name, image }: AppHeaderProps): React.JSX.Element {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-(--tb-ink-4)/80 backdrop-blur">
-      <div className="mx-auto flex h-14 min-w-0 max-w-6xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
+    <header className="sticky top-0 z-50 overflow-x-clip border-b border-border bg-(--tb-ink-4)/80 backdrop-blur">
+      <div className="mx-auto flex h-14 w-full min-w-0 max-w-6xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
         <Link href="/history" className="flex min-w-0 shrink items-center gap-2.5">
           <Image src="/threadbase-icon.svg" alt="" width={26} height={26} className="shrink-0 rounded-[7px]" />
           <span className="truncate text-sm font-semibold tracking-[-0.01em]">Threadbase CI</span>

@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useId, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react"
+import { createPortal } from "react-dom"
 import Link from "next/link"
 import { AnimatePresence, motion } from "framer-motion"
 import { Divide as Hamburger } from "hamburger-react"
@@ -28,8 +29,13 @@ const itemVariants = {
   open: { opacity: 1, x: 0 },
 }
 
+const subscribe = () => () => {}
+const clientSnapshot = () => true
+const serverSnapshot = () => false
+
 export function MobileNav({ role, name, image }: MobileNavProps): React.JSX.Element {
   const [open, setOpen] = useState(false)
+  const mounted = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot)
   const triggerWrapRef = useRef<HTMLDivElement>(null)
   const firstLinkRef = useRef<HTMLAnchorElement>(null)
   const wasOpenRef = useRef(false)
@@ -77,25 +83,16 @@ export function MobileNav({ role, name, image }: MobileNavProps): React.JSX.Elem
     if (wasOpenRef.current) {
       const trigger = triggerWrapRef.current?.querySelector<HTMLElement>(".hamburger-react")
       trigger?.focus()
-      wasOpenRef.current = false
     }
+    wasOpenRef.current = false
   }, [open])
 
-  return (
-    <div className="ml-auto flex items-center sm:hidden">
-      <div ref={triggerWrapRef} className="relative z-50 -mr-2">
-        <Hamburger
-          toggled={open}
-          toggle={setOpen}
-          size={20}
-          color="var(--tb-fg-0)"
-          label={open ? "Close menu" : "Open menu"}
-          rounded
-          hideOutline={false}
-          duration={0.35}
-        />
-      </div>
-
+  // Portal the overlay/panel to <body>. AppHeader uses backdrop-blur, which
+  // creates a containing block for position:fixed descendants — nesting the
+  // drawer there traps it in the 56px header and overflows the viewport.
+  const overlay =
+    mounted &&
+    createPortal(
       <AnimatePresence>
         {open && (
           <>
@@ -114,14 +111,14 @@ export function MobileNav({ role, name, image }: MobileNavProps): React.JSX.Elem
               key="mobile-nav-panel"
               id={menuId}
               aria-label="Mobile"
-              className="fixed inset-y-0 left-0 z-40 flex w-[min(18.5rem,86vw)] flex-col border-r border-border bg-(--tb-ink-4) pt-16 shadow-[0_18px_50px_rgba(0,0,0,0.55)]"
+              className="fixed inset-y-0 left-0 z-40 flex w-[min(18.5rem,86vw)] max-w-full flex-col border-r border-border bg-(--tb-ink-4) pt-16 shadow-[0_18px_50px_rgba(0,0,0,0.55)]"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%", transition: { duration: 0.28, ease: EASE } }}
               transition={{ duration: 0.4, ease: EASE }}
             >
               <motion.div
-                className="flex flex-1 flex-col gap-1 px-4"
+                className="flex min-w-0 flex-1 flex-col gap-1 px-4"
                 initial="closed"
                 animate="open"
                 exit="closed"
@@ -142,7 +139,7 @@ export function MobileNav({ role, name, image }: MobileNavProps): React.JSX.Elem
               </motion.div>
 
               <motion.div
-                className="mt-auto flex items-center gap-3 border-t border-border px-4 py-4"
+                className="mt-auto flex min-w-0 items-center gap-3 border-t border-border px-4 py-4"
                 variants={itemVariants}
                 initial="closed"
                 animate="open"
@@ -154,7 +151,7 @@ export function MobileNav({ role, name, image }: MobileNavProps): React.JSX.Elem
                   <img
                     src={image}
                     alt=""
-                    className="h-8 w-8 rounded-full border border-border"
+                    className="h-8 w-8 shrink-0 rounded-full border border-border"
                   />
                 )}
                 <div className="min-w-0 flex-1">
@@ -166,7 +163,25 @@ export function MobileNav({ role, name, image }: MobileNavProps): React.JSX.Elem
             </motion.nav>
           </>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body,
+    )
+
+  return (
+    <div className="ml-auto flex shrink-0 items-center sm:hidden">
+      <div ref={triggerWrapRef} className="relative z-50">
+        <Hamburger
+          toggled={open}
+          toggle={setOpen}
+          size={20}
+          color="var(--tb-fg-0)"
+          label={open ? "Close menu" : "Open menu"}
+          rounded
+          hideOutline={false}
+          duration={0.35}
+        />
+      </div>
+      {overlay}
     </div>
   )
 }
