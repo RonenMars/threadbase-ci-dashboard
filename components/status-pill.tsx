@@ -26,10 +26,10 @@ export function StatusPill({ run }: Readonly<{ run: WorkflowRun }>): React.JSX.E
   const t = TONE[tone]
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${t.wrap}`}
+      className={`inline-flex max-w-full items-center gap-1.5 truncate rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${t.wrap}`}
     >
-      <span className={`h-1.5 w-1.5 rounded-full ${t.dot} ${t.pulse ? "animate-pulse" : ""}`} />
-      {label}
+      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${t.dot} ${t.pulse ? "animate-pulse" : ""}`} />
+      <span className="truncate">{label}</span>
     </span>
   )
 }
