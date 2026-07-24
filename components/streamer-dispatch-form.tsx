@@ -48,8 +48,8 @@ export function StreamerDispatchForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-1">
+    <form onSubmit={handleSubmit(onSubmit)} className="min-w-0 space-y-4">
+      <div className="min-w-0 space-y-1">
         <Label htmlFor="deploy_ref">Branch / Tag</Label>
         <Controller
           control={control}
@@ -68,14 +68,14 @@ export function StreamerDispatchForm({
         />
       </div>
 
-      <div className="space-y-1">
+      <div className="min-w-0 space-y-1">
         <Label htmlFor="deployment_env">Deployment environment</Label>
         <Controller
           control={control}
           name="deployment_env"
           render={({ field }) => (
             <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger id="deployment_env" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="deployment_env" className="w-full min-w-0 max-w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {STREAMER_DEPLOYMENT_ENVIRONMENTS
                   .filter((environment) => includeLocalEnvironments || !environment.localOnly)
@@ -90,7 +90,7 @@ export function StreamerDispatchForm({
         />
       </div>
 
-      <div className="space-y-1">
+      <div className="min-w-0 space-y-1">
         <Label htmlFor="publish">Publish to Fly.io</Label>
         <Controller
           control={control}
@@ -100,7 +100,7 @@ export function StreamerDispatchForm({
               value={field.value ? "true" : "false"}
               onValueChange={(v) => field.onChange(v === "true")}
             >
-              <SelectTrigger id="publish" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="publish" className="w-full min-w-0 max-w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="false">no — build only</SelectItem>
                 <SelectItem value="true">yes — publish release</SelectItem>

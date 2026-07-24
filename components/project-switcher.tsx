@@ -12,7 +12,9 @@ type ProjectSwitcherProps = Readonly<{
 export function ProjectSwitcher({ value, onChange }: ProjectSwitcherProps): React.JSX.Element {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as ProjectId)}>
-      <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+      <SelectTrigger className="w-full min-w-0 max-w-full sm:w-56">
+        <SelectValue />
+      </SelectTrigger>
       <SelectContent>
         {PROJECT_OPTIONS.map((p) => (
           <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
