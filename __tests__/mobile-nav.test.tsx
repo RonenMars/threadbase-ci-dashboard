@@ -65,43 +65,53 @@ describe("AppHeader mobile nav", () => {
     expect(desktopNav).toHaveTextContent("Admin")
   })
 
+  it("renders a floating hamburger button with an accessible label", () => {
+    render(<MobileNav role="deployer" name="Ronen" image={null} />)
+    const trigger = screen.getByRole("button", { name: /open menu/i })
+    expect(trigger).toBeInTheDocument()
+    expect(trigger).toHaveAttribute("aria-expanded", "false")
+    expect(trigger.className).toContain("fixed")
+  })
+
   it("opens the slide-in panel from the hamburger and closes on Escape", async () => {
     render(<MobileNav role="deployer" name="Ronen" image={null} />)
 
-    fireEvent.click(screen.getByLabelText("Open menu"))
+    const trigger = screen.getByRole("button", { name: /open menu/i })
+    fireEvent.click(trigger)
 
-    const mobileNav = await screen.findByRole("navigation", { name: "Mobile" })
-    expect(mobileNav).toHaveTextContent("Deploy")
-    expect(mobileNav).toHaveTextContent("History")
-    expect(mobileNav).not.toHaveTextContent("Admin")
-    expect(screen.getByLabelText("Close menu")).toHaveAttribute("aria-expanded", "true")
+    const dialog = await screen.findByRole("dialog")
+    expect(dialog).toHaveAttribute("aria-modal", "true")
+    expect(dialog).toHaveTextContent("Deploy")
+    expect(dialog).toHaveTextContent("History")
+    expect(dialog).not.toHaveTextContent("Admin")
+    expect(trigger).toHaveAttribute("aria-expanded", "true")
+    expect(trigger).toHaveAttribute("aria-label", "Close menu")
 
-    fireEvent.keyDown(document, { key: "Escape" })
+    fireEvent.keyDown(window, { key: "Escape" })
 
     await waitFor(() => {
-      expect(screen.queryByRole("navigation", { name: "Mobile" })).not.toBeInTheDocument()
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     })
   })
 
-  it("portals the panel to document.body so backdrop-blur on the header cannot trap it", async () => {
+  it("keeps the floating menu outside the blurred header", async () => {
     render(<AppHeader role="admin" name="Ronen" image={null} />)
 
-    fireEvent.click(screen.getByLabelText("Open menu"))
+    fireEvent.click(screen.getByRole("button", { name: /open menu/i }))
 
-    const mobileNav = await screen.findByRole("navigation", { name: "Mobile" })
-    expect(mobileNav.closest("header")).toBeNull()
-    expect(document.body.contains(mobileNav)).toBe(true)
+    const dialog = await screen.findByRole("dialog")
+    expect(dialog.closest("header")).toBeNull()
   })
 
   it("closes when a panel link is clicked", async () => {
     render(<MobileNav role="viewer" name="Viewer" image={null} />)
 
-    fireEvent.click(screen.getByLabelText("Open menu"))
+    fireEvent.click(screen.getByRole("button", { name: /open menu/i }))
     const historyLink = await screen.findByRole("link", { name: "History" })
     fireEvent.click(historyLink)
 
     await waitFor(() => {
-      expect(screen.queryByRole("navigation", { name: "Mobile" })).not.toBeInTheDocument()
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     })
   })
 })
