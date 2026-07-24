@@ -33,7 +33,7 @@ export default async function AdminPage() {
   return (
     <>
       <AppHeader role={role} name={session.user.name ?? null} image={session.user.image ?? null} />
-      <main className="mx-auto w-full max-w-6xl p-8">
+      <main className="mx-auto w-full min-w-0 max-w-6xl p-4 sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Admin</p>
         <h1 className="mb-6 text-2xl font-semibold tracking-[-0.02em]">User management</h1>
         <UserTable initialUsers={rows} currentUserId={session.user.id} />

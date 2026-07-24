@@ -1,6 +1,6 @@
 # Mobile top-bar: hamburger menu
 
-**Status:** planned — not yet implemented.
+**Status:** done.
 
 **Goal:** on small screens, collapse the `AppHeader` nav (Deploy / History / Admin) into a hamburger toggle that opens a slide-in panel — matching the pattern already shipped in `tb-landing` (`RonenMars/tb-landing`, `origin/main`).
 
@@ -28,3 +28,8 @@
 - Links are staggered on entry; tapping a link navigates and closes the panel.
 - Escape and backdrop-click close it; focus returns to the toggle.
 - At ≥640px the panel machinery is absent and the inline nav shows.
+
+## Implementation notes
+- Shipped in `components/mobile-nav.tsx`, wired from `components/app-header.tsx`.
+- Desktop nav / identity stay `hidden` below `sm`; mobile hamburger is `sm:hidden`.
+- Header / page shells use `min-w-0` and tighter mobile padding; `html`/`body` clip horizontal overflow so the top bar cannot push the viewport sideways.
