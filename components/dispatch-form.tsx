@@ -12,12 +12,12 @@ export function DispatchForm({ includeLocalEnvironments }: DispatchFormProps): R
   const [project, setProject] = useState<ProjectId>(DEFAULT_PROJECT_ID)
 
   return (
-    <Card className="w-full max-w-lg">
-      <CardHeader className="flex-row items-center justify-between space-y-0">
-        <CardTitle>Trigger Deploy</CardTitle>
+    <Card className="w-full min-w-0 max-w-full">
+      <CardHeader className="flex flex-col items-stretch gap-3 space-y-0 sm:flex-row sm:items-center sm:justify-between">
+        <CardTitle className="shrink-0">Trigger Deploy</CardTitle>
         <ProjectSwitcher value={project} onChange={setProject} />
       </CardHeader>
-      <CardContent>
+      <CardContent className="min-w-0">
         {/* key remounts the form on project switch so its default ref/inputs reset. */}
         {project === "tb-mobile"
           ? <MobileDispatchForm key="tb-mobile" />

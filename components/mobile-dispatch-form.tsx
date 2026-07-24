@@ -59,8 +59,8 @@ export function MobileDispatchForm(): React.JSX.Element {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-1">
+    <form onSubmit={handleSubmit(onSubmit)} className="min-w-0 space-y-4">
+      <div className="min-w-0 space-y-1">
         <Label htmlFor="deploy_ref">Branch / Tag</Label>
         <Controller
           control={control}
@@ -79,14 +79,14 @@ export function MobileDispatchForm(): React.JSX.Element {
         />
       </div>
 
-      <div className="space-y-1">
+      <div className="min-w-0 space-y-1">
         <Label htmlFor="platform">Platform</Label>
         <Controller
           control={control}
           name="platform"
           render={({ field }) => (
             <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger id="platform" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="platform" className="w-full min-w-0 max-w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">all</SelectItem>
                 <SelectItem value="ios">ios</SelectItem>
@@ -98,14 +98,14 @@ export function MobileDispatchForm(): React.JSX.Element {
       </div>
 
       {(platform === "ios" || platform === "all") && (
-        <div className="space-y-1">
+        <div className="min-w-0 space-y-1">
           <Label htmlFor="target">iOS Target</Label>
           <Controller
             control={control}
             name="target"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id="target" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="target" className="w-full min-w-0 max-w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="testflight">testflight</SelectItem>
                   <SelectItem value="production">production</SelectItem>
@@ -117,14 +117,14 @@ export function MobileDispatchForm(): React.JSX.Element {
       )}
 
       {(platform === "android" || platform === "all") && (
-        <div className="space-y-1">
+        <div className="min-w-0 space-y-1">
           <Label htmlFor="android_track">Android Track</Label>
           <Controller
             control={control}
             name="android_track"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id="android_track" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="android_track" className="w-full min-w-0 max-w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="alpha">alpha</SelectItem>
                   <SelectItem value="internal">internal</SelectItem>
