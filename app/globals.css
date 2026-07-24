@@ -39,6 +39,9 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  /* tb-landing NavMenu color aliases (bg-bg-*, ring-offset-bg-primary) */
+  --color-bg-primary: var(--tb-ink-1);
+  --color-bg-secondary: var(--tb-ink-2);
   /* Threadbase brand tokens exposed as Tailwind colors */
   --color-live: var(--tb-amber-400);
   --color-live-foreground: #2a1a04;
@@ -190,4 +193,17 @@
 /* Live/active glow used on in-progress deploy actions */
 .tb-glow-amber {
   box-shadow: var(--shadow-glow-amber);
+}
+
+/* Scope tb-landing NavMenu token meanings without breaking shadcn buttons.
+   In this repo text-primary/secondary/muted resolve to --primary/--secondary/--muted
+   (not --color-*), so override those inside the menu tree. */
+.tb-nav-menu {
+  --primary: #f4f8ff;
+  --secondary: #9fb0c9;
+  --muted: #607089;
+  --accent: #63b3ff;
+  --ring: #63b3ff;
+  --color-bg-primary: #070b11;
+  --color-bg-secondary: #0b1320;
 }
