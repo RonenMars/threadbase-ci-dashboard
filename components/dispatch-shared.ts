@@ -22,8 +22,8 @@ export function useRefs(
       .then((r) => r.json())
       .then((data: Refs) => {
         setRefs(data)
-        // Prefer main; the branches list is alphabetical, so branches[0] would
-        // otherwise default to whatever sorts first (e.g. "chore/...").
+        // Prefer main; the branches list is newest-first, so branches[0] would
+        // otherwise default to whichever tip was most recently committed.
         const preferred = data.branches.includes("main")
           ? "main"
           : data.branches[0] ?? "main"

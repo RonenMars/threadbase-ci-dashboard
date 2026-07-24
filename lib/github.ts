@@ -35,27 +35,63 @@ export async function getGitHubToken(userId: string): Promise<string> {
   return account.access_token
 }
 
+/** GraphQL: list heads/tags by tip commit date, newest first. REST is A–Z only. */
+const REFS_QUERY = `
+  query($owner: String!, $name: String!) {
+    repository(owner: $owner, name: $name) {
+      branches: refs(
+        refPrefix: "refs/heads/"
+        first: 100
+        orderBy: { field: TAG_COMMIT_DATE, direction: DESC }
+      ) {
+        nodes { name }
+      }
+      tags: refs(
+        refPrefix: "refs/tags/"
+        first: 100
+        orderBy: { field: TAG_COMMIT_DATE, direction: DESC }
+      ) {
+        nodes { name }
+      }
+    }
+  }
+`
+
+type RefsGraphQL = {
+  data?: {
+    repository: {
+      branches: { nodes: Array<{ name: string }> }
+      tags: { nodes: Array<{ name: string }> }
+    } | null
+  }
+  errors?: Array<{ message: string }>
+}
+
 export async function getRefs(
   userId: string,
   project: Project
 ): Promise<{ branches: string[]; tags: string[] }> {
   const token = await getGitHubToken(userId)
-  const headers = GH_HEADERS(token)
+  const [owner, name] = project.repo.split("/")
+  if (!owner || !name) throw new Error(`Invalid repo: ${project.repo}`)
 
-  const [branchesRes, tagsRes] = await Promise.all([
-    fetch(`${GH_API}/repos/${project.repo}/branches?per_page=100`, { headers }),
-    fetch(`${GH_API}/repos/${project.repo}/tags?per_page=100`, { headers }),
-  ])
+  const res = await fetch(`${GH_API}/graphql`, {
+    method: "POST",
+    headers: { ...GH_HEADERS(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ query: REFS_QUERY, variables: { owner, name } }),
+  })
+  if (!res.ok) throw new Error(`GitHub refs error: ${res.status}`)
 
-  if (!branchesRes.ok) throw new Error(`GitHub branches error: ${branchesRes.status}`)
-  if (!tagsRes.ok) throw new Error(`GitHub tags error: ${tagsRes.status}`)
-
-  const branches: Array<{ name: string }> = await branchesRes.json()
-  const tags: Array<{ name: string }> = await tagsRes.json()
+  const body: RefsGraphQL = await res.json()
+  if (body.errors?.length) {
+    throw new Error(`GitHub refs error: ${body.errors[0].message}`)
+  }
+  const repo = body.data?.repository
+  if (!repo) throw new Error(`Repository not found: ${project.repo}`)
 
   return {
-    branches: branches.map((b) => b.name),
-    tags: tags.map((t) => t.name),
+    branches: repo.branches.nodes.map((b) => b.name),
+    tags: repo.tags.nodes.map((t) => t.name),
   }
 }
 
