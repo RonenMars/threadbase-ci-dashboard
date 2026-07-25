@@ -100,7 +100,7 @@ export function RefCombobox({
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
-          className="w-full justify-between bg-input font-normal"
+          className="w-full min-w-0 max-w-full justify-between bg-input font-normal"
         >
           <span className="flex items-center gap-2 truncate">
             {value && (isTag ? <TagIcon className="text-muted-foreground" /> : <GitBranchIcon className="text-muted-foreground" />)}
