@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const correlationId = await triggerDispatch(session.user.id, project, parsed.data)
+    const correlationId = await triggerDispatch(project, parsed.data)
     return NextResponse.json({ ok: true, correlationId })
   } catch (err) {
     return NextResponse.json(

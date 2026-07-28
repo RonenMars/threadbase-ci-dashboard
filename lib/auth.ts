@@ -15,8 +15,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   }),
   providers: [
     GitHub({
+      // Identity only — repo/Actions calls use the GitHub App installation token.
       authorization: {
-        params: { scope: "read:user user:email repo workflow" },
+        params: { scope: "read:user user:email" },
       },
     }),
   ],

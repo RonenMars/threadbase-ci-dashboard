@@ -9,14 +9,8 @@ vi.mock("@/lib/env", () => ({
     TB_STREAMER_WORKFLOW_ID: "release.yml",
   },
 }))
-// triggerDispatch calls getGitHubToken in-module, so intercept at the db layer:
-// select().from().where() resolves to a single account row holding the token.
-vi.mock("@/lib/db", () => ({
-  db: {
-    select: () => ({
-      from: () => ({ where: async () => [{ access_token: "test-token" }] }),
-    }),
-  },
+vi.mock("@/lib/github-app", () => ({
+  getInstallationToken: vi.fn(async () => "test-token"),
 }))
 
 const { triggerDispatch } = await import("@/lib/github")
@@ -37,7 +31,7 @@ describe("triggerDispatch payload", () => {
     const mobile = getProject("tb-mobile")!
 
     async function dispatchAndReadBody(release_notes?: string) {
-      await triggerDispatch("user-1", mobile, {
+      await triggerDispatch(mobile, {
         deploy_ref: "feat/my-branch",
         platform: "all",
         target: "testflight",
@@ -79,7 +73,7 @@ describe("triggerDispatch payload", () => {
     const streamer = getProject("tb-streamer")!
 
     it("targets the streamer repo + workflow and serializes publish", async () => {
-      await triggerDispatch("user-1", streamer, {
+      await triggerDispatch(streamer, {
         deploy_ref: "main",
         deployment_env: "fly-prod",
         publish: true,
@@ -87,7 +81,7 @@ describe("triggerDispatch payload", () => {
       const { url, body } = lastRequest()
       expect(url).toContain("owner/streamer/actions/workflows/release.yml")
       expect(body.ref).toBe("main")
-      // workflow_dispatch inputs are strings, so the boolean is serialized.
+      // workflow_dispatch inputs are always strings, so the boolean is serialized.
       expect(body.inputs.deployment_env).toBe("fly-prod")
       expect(body.inputs.publish).toBe("true")
     })
@@ -99,7 +93,7 @@ describe("triggerDispatch payload", () => {
     const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
     it("sends a generated uuid to tb-mobile and returns it", async () => {
-      const returned = await triggerDispatch("user-1", getProject("tb-mobile")!, {
+      const returned = await triggerDispatch(getProject("tb-mobile")!, {
         deploy_ref: "main",
         platform: "all",
         target: "testflight",
@@ -110,7 +104,7 @@ describe("triggerDispatch payload", () => {
     })
 
     it("sends a generated uuid to tb-streamer and returns it", async () => {
-      const returned = await triggerDispatch("user-1", getProject("tb-streamer")!, {
+      const returned = await triggerDispatch(getProject("tb-streamer")!, {
         deploy_ref: "main",
         deployment_env: "fly-demo",
         publish: false,
@@ -127,8 +121,8 @@ describe("triggerDispatch payload", () => {
         target: "testflight",
         android_track: "alpha",
       } as const
-      const first = await triggerDispatch("user-1", mobile, { ...inputs })
-      const second = await triggerDispatch("user-1", mobile, { ...inputs })
+      const first = await triggerDispatch(mobile, { ...inputs })
+      const second = await triggerDispatch(mobile, { ...inputs })
       expect(first).not.toBe(second)
     })
   })
