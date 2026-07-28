@@ -6,6 +6,13 @@ import { DispatchForm } from "@/components/dispatch-form"
 vi.mock("@/components/dispatch-shared", () => ({
   useRefs: () => ({ refs: { branches: ["main"], tags: [] }, loading: false }),
   submitDispatch: vi.fn(),
+  useDispatchSubmit: () => ({
+    status: "idle" as const,
+    errorMessage: "",
+    runUrl: null,
+    runLoading: false,
+    submit: vi.fn(),
+  }),
 }))
 
 describe("DispatchForm mobile width", () => {

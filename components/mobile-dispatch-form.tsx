@@ -1,23 +1,21 @@
 "use client"
-import { useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { RocketLaunchIcon, WarningCircleIcon, CheckCircleIcon } from "@phosphor-icons/react"
-import { Button } from "@/components/ui/button"
+import { WarningCircleIcon, CheckCircleIcon } from "@phosphor-icons/react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { RefCombobox } from "@/components/ref-combobox"
-import { useRefs, submitDispatch } from "@/components/dispatch-shared"
-import type { SubmitStatus } from "@/components/dispatch-shared"
+import { ConfirmSubmitButton } from "@/components/confirm-submit-button"
+import { useRefs, useDispatchSubmit } from "@/components/dispatch-shared"
 import { mobileDispatchSchema } from "@/lib/dispatch-schema"
 import type { MobileDispatchInputs } from "@/lib/dispatch-schema"
 
 export function MobileDispatchForm(): React.JSX.Element {
-  const [status, setStatus] = useState<SubmitStatus>("idle")
-  const [errorMessage, setErrorMessage] = useState("")
+  const { status, errorMessage, runUrl, runLoading, submit } =
+    useDispatchSubmit("tb-mobile")
 
   const {
     control, handleSubmit, watch, setValue,
@@ -44,18 +42,10 @@ export function MobileDispatchForm(): React.JSX.Element {
     (platform === "ios" || platform === "all") && target === "production"
 
   async function onSubmit(values: MobileDispatchInputs) {
-    setStatus("idle")
-    setErrorMessage("")
-    const error = await submitDispatch("tb-mobile", {
+    await submit({
       ...values,
       ...(values.release_notes ? {} : { release_notes: undefined }),
     })
-    if (error) {
-      setErrorMessage(error)
-      setStatus("error")
-    } else {
-      setStatus("success")
-    }
   }
 
   return (
@@ -168,10 +158,13 @@ export function MobileDispatchForm(): React.JSX.Element {
         </p>
       )}
 
-      <Button type="submit" disabled={isSubmitting || refsLoading} className="w-full">
-        <RocketLaunchIcon weight="fill" />
-        {isSubmitting ? "Triggering…" : "Run Workflow"}
-      </Button>
+      <ConfirmSubmitButton
+        disabled={refsLoading}
+        isSubmitting={isSubmitting}
+        status={status}
+        runUrl={runUrl}
+        runLoading={runLoading}
+      />
     </form>
   )
 }

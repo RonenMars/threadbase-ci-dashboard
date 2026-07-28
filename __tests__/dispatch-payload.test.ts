@@ -92,4 +92,44 @@ describe("triggerDispatch payload", () => {
       expect(body.inputs.publish).toBe("true")
     })
   })
+
+  // Both workflows echo correlation_id into run-name; it is the only handle the
+  // dashboard has on the run it started, since dispatch answers 204 with no id.
+  describe("correlation id", () => {
+    const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+    it("sends a generated uuid to tb-mobile and returns it", async () => {
+      const returned = await triggerDispatch("user-1", getProject("tb-mobile")!, {
+        deploy_ref: "main",
+        platform: "all",
+        target: "testflight",
+        android_track: "alpha",
+      })
+      expect(returned).toMatch(UUID)
+      expect(lastRequest().body.inputs.correlation_id).toBe(returned)
+    })
+
+    it("sends a generated uuid to tb-streamer and returns it", async () => {
+      const returned = await triggerDispatch("user-1", getProject("tb-streamer")!, {
+        deploy_ref: "main",
+        deployment_env: "fly-demo",
+        publish: false,
+      })
+      expect(returned).toMatch(UUID)
+      expect(lastRequest().body.inputs.correlation_id).toBe(returned)
+    })
+
+    it("uses a fresh id per dispatch so runs never collide", async () => {
+      const mobile = getProject("tb-mobile")!
+      const inputs = {
+        deploy_ref: "main",
+        platform: "all",
+        target: "testflight",
+        android_track: "alpha",
+      } as const
+      const first = await triggerDispatch("user-1", mobile, { ...inputs })
+      const second = await triggerDispatch("user-1", mobile, { ...inputs })
+      expect(first).not.toBe(second)
+    })
+  })
 })
