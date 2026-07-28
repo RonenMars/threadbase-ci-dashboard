@@ -1,16 +1,14 @@
 "use client"
-import { useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { RocketLaunchIcon, WarningCircleIcon, CheckCircleIcon } from "@phosphor-icons/react"
-import { Button } from "@/components/ui/button"
+import { WarningCircleIcon, CheckCircleIcon } from "@phosphor-icons/react"
 import { Label } from "@/components/ui/label"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { RefCombobox } from "@/components/ref-combobox"
-import { useRefs, submitDispatch } from "@/components/dispatch-shared"
-import type { SubmitStatus } from "@/components/dispatch-shared"
+import { ConfirmSubmitButton } from "@/components/confirm-submit-button"
+import { useRefs, useDispatchSubmit } from "@/components/dispatch-shared"
 import { streamerDispatchSchema } from "@/lib/dispatch-schema"
 import { STREAMER_DEPLOYMENT_ENVIRONMENTS } from "@/lib/project-options"
 import type { StreamerDispatchInputs } from "@/lib/dispatch-schema"
@@ -20,8 +18,8 @@ type StreamerDispatchFormProps = Readonly<{ includeLocalEnvironments: boolean }>
 export function StreamerDispatchForm({
   includeLocalEnvironments,
 }: StreamerDispatchFormProps): React.JSX.Element {
-  const [status, setStatus] = useState<SubmitStatus>("idle")
-  const [errorMessage, setErrorMessage] = useState("")
+  const { status, errorMessage, runUrl, runLoading, submit } =
+    useDispatchSubmit("tb-streamer")
 
   const {
     control, handleSubmit, setValue,
@@ -36,15 +34,7 @@ export function StreamerDispatchForm({
   )
 
   async function onSubmit(values: StreamerDispatchInputs) {
-    setStatus("idle")
-    setErrorMessage("")
-    const error = await submitDispatch("tb-streamer", values)
-    if (error) {
-      setErrorMessage(error)
-      setStatus("error")
-    } else {
-      setStatus("success")
-    }
+    await submit(values)
   }
 
   return (
@@ -123,10 +113,13 @@ export function StreamerDispatchForm({
         </p>
       )}
 
-      <Button type="submit" disabled={isSubmitting || refsLoading} className="w-full">
-        <RocketLaunchIcon weight="fill" />
-        {isSubmitting ? "Triggering…" : "Run Workflow"}
-      </Button>
+      <ConfirmSubmitButton
+        disabled={refsLoading}
+        isSubmitting={isSubmitting}
+        status={status}
+        runUrl={runUrl}
+        runLoading={runLoading}
+      />
     </form>
   )
 }

@@ -29,7 +29,7 @@ type ProjectDef<Inputs> = {
   repo: string
   workflow: string
   schema: z.ZodType<Inputs>
-  buildDispatchBody: (inputs: Inputs) => DispatchBody
+  buildDispatchBody: (inputs: Inputs, correlationId: string) => DispatchBody
 }
 
 const mobile: ProjectDef<MobileDispatchInputs> = {
@@ -38,7 +38,7 @@ const mobile: ProjectDef<MobileDispatchInputs> = {
   repo: env.TB_MOBILE_REPO,
   workflow: env.TB_MOBILE_WORKFLOW_ID,
   schema: mobileDispatchSchema,
-  buildDispatchBody: (inputs) => ({
+  buildDispatchBody: (inputs, correlationId) => ({
     ref: inputs.deploy_ref,
     inputs: {
       platform: inputs.platform,
@@ -48,6 +48,7 @@ const mobile: ProjectDef<MobileDispatchInputs> = {
       // it has to be passed through as an input too — otherwise every run would
       // check out the workflow file's default of "main".
       deploy_ref: inputs.deploy_ref,
+      correlation_id: correlationId,
       ...(inputs.release_notes ? { release_notes: inputs.release_notes } : {}),
     },
   }),
@@ -59,13 +60,14 @@ const streamer: ProjectDef<StreamerDispatchInputs> = {
   repo: env.TB_STREAMER_REPO,
   workflow: env.TB_STREAMER_WORKFLOW_ID,
   schema: streamerDispatchSchema,
-  buildDispatchBody: (inputs) => ({
+  buildDispatchBody: (inputs, correlationId) => ({
     ref: inputs.deploy_ref,
     // release.yml gates the Fly.io publish on the `publish` boolean; GitHub
     // workflow_dispatch inputs are always strings, so serialize it.
     inputs: {
       deployment_env: inputs.deployment_env,
       publish: String(inputs.publish),
+      correlation_id: correlationId,
     },
   }),
 }

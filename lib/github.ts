@@ -95,15 +95,29 @@ export async function getRefs(
   }
 }
 
+/**
+ * Fires the workflow and returns the correlation id stamped into its run-name.
+ *
+ * GitHub's dispatch endpoint answers 204 with no body, so there is no run id to
+ * read back. Instead we generate an id here, pass it as a workflow input that
+ * both repos echo into `run-name`, and let findRunByCorrelationId poll for the
+ * run carrying it. The id is generated server-side (never client-supplied) so
+ * nothing arbitrary can reach the run title.
+ */
 export async function triggerDispatch(
   userId: string,
   project: Project,
   inputs: DispatchInputs
-): Promise<void> {
+): Promise<string> {
   const token = await getGitHubToken(userId)
+  const correlationId = crypto.randomUUID()
   // The route validated `inputs` against this project's schema, so the cast is
   // safe: buildDispatchBody expects exactly that project's input shape.
-  const body = (project.buildDispatchBody as (i: DispatchInputs) => unknown)(inputs)
+  const build = project.buildDispatchBody as (
+    i: DispatchInputs,
+    c: string
+  ) => unknown
+  const body = build(inputs, correlationId)
   const res = await fetch(
     `${GH_API}/repos/${project.repo}/actions/workflows/${project.workflow}/dispatches`,
     {
@@ -116,6 +130,40 @@ export async function triggerDispatch(
     const text = await res.text()
     throw new Error(`GitHub dispatch error: ${res.status} ${text}`)
   }
+  return correlationId
+}
+
+/**
+ * Finds the run whose title carries `correlationId`, or null if it has not been
+ * created yet. GitHub takes a moment to materialize a dispatched run, so the
+ * caller is expected to retry; returning null is the normal "not yet" answer,
+ * not an error.
+ */
+export async function findRunByCorrelationId(
+  userId: string,
+  project: Project,
+  correlationId: string
+): Promise<{ html_url: string; run_number: number } | null> {
+  const token = await getGitHubToken(userId)
+  const res = await fetch(
+    `${GH_API}/repos/${project.repo}/actions/workflows/${project.workflow}/runs?per_page=20`,
+    { headers: GH_HEADERS(token), cache: "no-store" }
+  )
+  if (!res.ok) throw new Error(`GitHub runs error: ${res.status}`)
+  const data = await res.json()
+  const runs = data.workflow_runs as Array<{
+    name: string | null
+    display_title: string | null
+    html_url: string
+    run_number: number
+  }>
+  const match = runs.find(
+    (r) =>
+      r.display_title?.includes(correlationId) || r.name?.includes(correlationId)
+  )
+  return match
+    ? { html_url: match.html_url, run_number: match.run_number }
+    : null
 }
 
 export async function getRuns(
