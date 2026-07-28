@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: `Unknown project: ${id}` }, { status: 400 })
   }
   try {
-    const runs = await getRuns(session.user.id, project)
+    const runs = await getRuns(project)
     return NextResponse.json({ runs })
   } catch (err) {
     return NextResponse.json(

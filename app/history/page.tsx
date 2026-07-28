@@ -13,7 +13,7 @@ export default async function HistoryPage() {
 
   let initialRuns: WorkflowRun[] = []
   try {
-    initialRuns = await getRuns(session.user.id, getProject(DEFAULT_PROJECT_ID)!)
+    initialRuns = await getRuns(getProject(DEFAULT_PROJECT_ID)!)
   } catch {
     // Render with an empty list; client-side polling will fill it in.
   }

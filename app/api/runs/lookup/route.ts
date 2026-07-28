@@ -24,11 +24,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: `Unknown project: ${id}` }, { status: 400 })
   }
   try {
-    const run = await findRunByCorrelationId(
-      session.user.id,
-      project,
-      correlationId
-    )
+    const run = await findRunByCorrelationId(project, correlationId)
     return NextResponse.json({ run })
   } catch (err) {
     return NextResponse.json(

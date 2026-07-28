@@ -1,8 +1,6 @@
-import { and, eq } from "drizzle-orm"
-import { db } from "@/lib/db"
-import { accounts } from "@/lib/db/schema"
 import type { Project } from "@/lib/projects"
 import type { DispatchInputs } from "@/lib/dispatch-schema"
+import { getInstallationToken } from "@/lib/github-app"
 
 export type { DispatchInputs } from "@/lib/dispatch-schema"
 
@@ -24,15 +22,6 @@ export interface WorkflowRun {
   updated_at: string
   actor: string | null
   run_number: number
-}
-
-export async function getGitHubToken(userId: string): Promise<string> {
-  const [account] = await db
-    .select({ access_token: accounts.access_token })
-    .from(accounts)
-    .where(and(eq(accounts.userId, userId), eq(accounts.provider, "github")))
-  if (!account?.access_token) throw new Error("No GitHub token for user")
-  return account.access_token
 }
 
 /** GraphQL: list heads/tags by tip commit date, newest first. REST is A–Z only. */
@@ -68,10 +57,9 @@ type RefsGraphQL = {
 }
 
 export async function getRefs(
-  userId: string,
   project: Project
 ): Promise<{ branches: string[]; tags: string[] }> {
-  const token = await getGitHubToken(userId)
+  const token = await getInstallationToken()
   const [owner, name] = project.repo.split("/")
   if (!owner || !name) throw new Error(`Invalid repo: ${project.repo}`)
 
@@ -105,11 +93,10 @@ export async function getRefs(
  * nothing arbitrary can reach the run title.
  */
 export async function triggerDispatch(
-  userId: string,
   project: Project,
   inputs: DispatchInputs
 ): Promise<string> {
-  const token = await getGitHubToken(userId)
+  const token = await getInstallationToken()
   const correlationId = crypto.randomUUID()
   // The route validated `inputs` against this project's schema, so the cast is
   // safe: buildDispatchBody expects exactly that project's input shape.
@@ -140,11 +127,10 @@ export async function triggerDispatch(
  * not an error.
  */
 export async function findRunByCorrelationId(
-  userId: string,
   project: Project,
   correlationId: string
 ): Promise<{ html_url: string; run_number: number } | null> {
-  const token = await getGitHubToken(userId)
+  const token = await getInstallationToken()
   const res = await fetch(
     `${GH_API}/repos/${project.repo}/actions/workflows/${project.workflow}/runs?per_page=20`,
     { headers: GH_HEADERS(token), cache: "no-store" }
@@ -166,11 +152,8 @@ export async function findRunByCorrelationId(
     : null
 }
 
-export async function getRuns(
-  userId: string,
-  project: Project
-): Promise<WorkflowRun[]> {
-  const token = await getGitHubToken(userId)
+export async function getRuns(project: Project): Promise<WorkflowRun[]> {
+  const token = await getInstallationToken()
   const res = await fetch(
     `${GH_API}/repos/${project.repo}/actions/workflows/${project.workflow}/runs?per_page=20`,
     { headers: GH_HEADERS(token) }
