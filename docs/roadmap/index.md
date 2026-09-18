@@ -8,6 +8,7 @@ Planned enhancements to the Threadbase CI Dashboard. Each task is a separate fil
 |------|--------|---------|
 | [Mobile hamburger nav](./tasks/mobile-hamburger-nav.md) | done | Collapse the top-bar nav into a slide-in hamburger below 640px, mirroring the `hamburger-react` + framer-motion pattern in `tb-landing`. |
 | [Multi-repo deployments](./tasks/multi-repo-deployments.md) | planned | Manage `tb-streamer` (Fly.io) deploys alongside `tb-mobile`, via a projects registry, per-project dispatch forms, and project-scoped history. |
+| [Auth remaining phases](./tasks/auth-remaining-phases.md) | planned | Preview Credentials login, multi-provider identity (Google + linking), and dispatch attribution after GitHub App API access. |
 
 ## Related
 
