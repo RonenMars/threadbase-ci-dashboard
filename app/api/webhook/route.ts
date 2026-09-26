@@ -1,6 +1,6 @@
 import { validateGitHubSignature } from "@/lib/webhook"
 import { getRedis, eventsKey, EVENTS_MAX, EVENTS_TTL } from "@/lib/redis"
-import { projectIdForRepo } from "@/lib/projects"
+import { projectIdForWorkflowRun } from "@/lib/projects"
 import { env } from "@/lib/env"
 
 export async function POST(req: Request) {
@@ -19,11 +19,15 @@ export async function POST(req: Request) {
 
   const payload = JSON.parse(body)
 
-  // Route the event to its project's list; ignore repos not in the registry.
-  const projectId = projectIdForRepo(payload.repository?.full_name ?? "")
+  // Route the event to its project's list; ignore workflows not in the registry.
+  const run = payload.workflow_run
+  const projectId = projectIdForWorkflowRun(
+    payload.repository?.full_name ?? "",
+    run?.path ?? "",
+    run?.workflow_id ?? 0
+  )
   if (!projectId) return new Response("OK")
 
-  const run = payload.workflow_run
   const entry = JSON.stringify({
     ts: Date.now(),
     data: {

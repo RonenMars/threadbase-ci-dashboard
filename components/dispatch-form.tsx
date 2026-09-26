@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProjectSwitcher } from "@/components/project-switcher"
 import { MobileDispatchForm } from "@/components/mobile-dispatch-form"
+import { MobileQaDispatchForm } from "@/components/mobile-qa-dispatch-form"
 import { StreamerDispatchForm } from "@/components/streamer-dispatch-form"
 import { DEFAULT_PROJECT_ID, type ProjectId } from "@/lib/project-options"
 
@@ -19,12 +20,14 @@ export function DispatchForm({ includeLocalEnvironments }: DispatchFormProps): R
       </CardHeader>
       <CardContent className="min-w-0">
         {/* key remounts the form on project switch so its default ref/inputs reset. */}
-        {project === "tb-mobile"
-          ? <MobileDispatchForm key="tb-mobile" />
-          : <StreamerDispatchForm
-              key="tb-streamer"
-              includeLocalEnvironments={includeLocalEnvironments}
-            />}
+        {project === "tb-mobile" && <MobileDispatchForm key="tb-mobile" />}
+        {project === "tb-mobile-qa" && <MobileQaDispatchForm key="tb-mobile-qa" />}
+        {project === "tb-streamer" && (
+          <StreamerDispatchForm
+            key="tb-streamer"
+            includeLocalEnvironments={includeLocalEnvironments}
+          />
+        )}
       </CardContent>
     </Card>
   )

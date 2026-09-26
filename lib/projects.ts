@@ -3,10 +3,12 @@ import { env } from "@/lib/env"
 import type { ProjectId } from "@/lib/project-options"
 import {
   mobileDispatchSchema,
+  mobileQaDispatchSchema,
   streamerDispatchSchema,
 } from "@/lib/dispatch-schema"
 import type {
   MobileDispatchInputs,
+  MobileQaDispatchInputs,
   StreamerDispatchInputs,
 } from "@/lib/dispatch-schema"
 
@@ -54,6 +56,25 @@ const mobile: ProjectDef<MobileDispatchInputs> = {
   }),
 }
 
+const mobileQa: ProjectDef<MobileQaDispatchInputs> = {
+  id: "tb-mobile-qa",
+  label: "Threadbase Mobile QA",
+  repo: env.TB_MOBILE_REPO,
+  workflow: env.TB_MOBILE_QA_WORKFLOW_ID,
+  schema: mobileQaDispatchSchema,
+  buildDispatchBody: (inputs, correlationId) => ({
+    ref: inputs.deploy_ref,
+    inputs: {
+      platform: inputs.platform,
+      // qa.yml checks out `inputs.deploy_ref`, same as deploy.yml.
+      deploy_ref: inputs.deploy_ref,
+      groups: inputs.groups,
+      correlation_id: correlationId,
+      ...(inputs.release_notes ? { release_notes: inputs.release_notes } : {}),
+    },
+  }),
+}
+
 const streamer: ProjectDef<StreamerDispatchInputs> = {
   id: "tb-streamer",
   label: "Threadbase Streamer",
@@ -73,16 +94,20 @@ const streamer: ProjectDef<StreamerDispatchInputs> = {
 }
 
 // Union so callers can hold "some project" without narrowing the input type.
-export type Project = ProjectDef<MobileDispatchInputs> | ProjectDef<StreamerDispatchInputs>
+export type Project =
+  | ProjectDef<MobileDispatchInputs>
+  | ProjectDef<MobileQaDispatchInputs>
+  | ProjectDef<StreamerDispatchInputs>
 
 const REGISTRY: Record<ProjectId, Project> = {
   "tb-mobile": mobile,
+  "tb-mobile-qa": mobileQa,
   "tb-streamer": streamer,
 }
 
-export const PROJECTS: Project[] = [mobile, streamer]
+export const PROJECTS: Project[] = [mobile, mobileQa, streamer]
 export function isProjectId(id: string): id is ProjectId {
-  return id === "tb-mobile" || id === "tb-streamer"
+  return Object.hasOwn(REGISTRY, id)
 }
 
 /** Returns the project, or null for an unknown id (callers reject with 400). */
@@ -91,11 +116,24 @@ export function getProject(id: string): Project | null {
 }
 
 /**
- * Maps a webhook's `repository.full_name` back to its project id, so
- * workflow_run events land in the right per-project event list. Case-insensitive
- * because GitHub's owner/repo casing in payloads can differ from our config.
+ * Maps a workflow_run webhook back to its project id, so the event lands in the
+ * right per-project event list. The repo alone is not enough: tb-mobile's Deploy
+ * and QA workflows share a repo, and its CI runs belong to neither. The workflow
+ * config may be a file name or a numeric id, so both are matched. The repo match
+ * is case-insensitive because payload casing can differ from our config.
  */
-export function projectIdForRepo(fullName: string): ProjectId | null {
-  const lower = fullName.toLowerCase()
-  return PROJECTS.find((p) => p.repo.toLowerCase() === lower)?.id ?? null
+export function projectIdForWorkflowRun(
+  fullName: string,
+  workflowPath: string,
+  workflowId: number
+): ProjectId | null {
+  const repo = fullName.toLowerCase()
+  const file = workflowPath.split("/").pop()
+  return (
+    PROJECTS.find(
+      (p) =>
+        p.repo.toLowerCase() === repo &&
+        (p.workflow === file || p.workflow === String(workflowId))
+    )?.id ?? null
+  )
 }

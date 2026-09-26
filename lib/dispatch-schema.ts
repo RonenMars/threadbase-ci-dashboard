@@ -17,6 +17,15 @@ export const mobileDispatchSchema = z.object({
   release_notes: z.string().optional(),
 })
 
+// qa.yml builds an enforced-tracking binary for Firebase App Distribution; it
+// has no store target, so there is nothing like target/android_track here.
+export const mobileQaDispatchSchema = z.object({
+  deploy_ref: z.string().min(1),
+  platform: z.enum(["ios", "android", "all"]),
+  groups: z.string().min(1),
+  release_notes: z.string().optional(),
+})
+
 export const streamerDispatchSchema = z.object({
   deploy_ref: z.string().min(1),
   deployment_env: z.enum(STREAMER_DEPLOYMENT_ENV_VALUES),
@@ -24,5 +33,9 @@ export const streamerDispatchSchema = z.object({
 })
 
 export type MobileDispatchInputs = z.infer<typeof mobileDispatchSchema>
+export type MobileQaDispatchInputs = z.infer<typeof mobileQaDispatchSchema>
 export type StreamerDispatchInputs = z.infer<typeof streamerDispatchSchema>
-export type DispatchInputs = MobileDispatchInputs | StreamerDispatchInputs
+export type DispatchInputs =
+  | MobileDispatchInputs
+  | MobileQaDispatchInputs
+  | StreamerDispatchInputs
