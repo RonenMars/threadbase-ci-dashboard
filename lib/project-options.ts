@@ -1,5 +1,6 @@
 export const PROJECT_OPTIONS = [
   { id: "tb-mobile", label: "Threadbase Mobile" },
+  { id: "tb-mobile-qa", label: "Threadbase Mobile QA" },
   { id: "tb-streamer", label: "Threadbase Streamer" },
 ] as const
 

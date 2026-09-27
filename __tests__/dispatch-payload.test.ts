@@ -5,6 +5,7 @@ vi.mock("@/lib/env", () => ({
   env: {
     TB_MOBILE_REPO: "owner/mobile",
     TB_MOBILE_WORKFLOW_ID: "deploy.yml",
+    TB_MOBILE_QA_WORKFLOW_ID: "qa.yml",
     TB_STREAMER_REPO: "owner/streamer",
     TB_STREAMER_WORKFLOW_ID: "release.yml",
   },
@@ -14,7 +15,7 @@ vi.mock("@/lib/github-app", () => ({
 }))
 
 const { triggerDispatch } = await import("@/lib/github")
-const { getProject } = await import("@/lib/projects")
+const { getProject, projectIdForWorkflowRun } = await import("@/lib/projects")
 
 describe("triggerDispatch payload", () => {
   beforeEach(() => {
@@ -66,6 +67,37 @@ describe("triggerDispatch payload", () => {
     it("includes release_notes when provided", async () => {
       const body = await dispatchAndReadBody("what's new")
       expect(body.inputs.release_notes).toBe("what's new")
+    })
+  })
+
+  describe("tb-mobile-qa", () => {
+    const qa = getProject("tb-mobile-qa")!
+
+    it("targets qa.yml in the mobile repo with ref, groups and deploy_ref", async () => {
+      await triggerDispatch(qa, {
+        deploy_ref: "feat/my-branch",
+        platform: "ios",
+        groups: "qa,design",
+      })
+      const { url, body } = lastRequest()
+      expect(url).toContain("owner/mobile/actions/workflows/qa.yml")
+      expect(body.ref).toBe("feat/my-branch")
+      expect(body.inputs).toMatchObject({
+        platform: "ios",
+        deploy_ref: "feat/my-branch",
+        groups: "qa,design",
+      })
+      expect(body.inputs).not.toHaveProperty("release_notes")
+    })
+
+    it("includes release_notes when provided", async () => {
+      await triggerDispatch(qa, {
+        deploy_ref: "main",
+        platform: "all",
+        groups: "qa",
+        release_notes: "try the new picker",
+      })
+      expect(lastRequest().body.inputs.release_notes).toBe("try the new picker")
     })
   })
 
@@ -125,5 +157,22 @@ describe("triggerDispatch payload", () => {
       const second = await triggerDispatch(mobile, { ...inputs })
       expect(first).not.toBe(second)
     })
+  })
+})
+
+// Deploy and QA share tb-mobile's repo, so a webhook routed by repo alone would
+// file QA runs (and every CI run) under Deploy.
+describe("projectIdForWorkflowRun", () => {
+  it("routes each tb-mobile workflow to its own project", () => {
+    expect(projectIdForWorkflowRun("owner/mobile", ".github/workflows/deploy.yml", 1)).toBe("tb-mobile")
+    expect(projectIdForWorkflowRun("owner/mobile", ".github/workflows/qa.yml", 2)).toBe("tb-mobile-qa")
+  })
+
+  it("ignores a workflow in a known repo that no project deploys with", () => {
+    expect(projectIdForWorkflowRun("owner/mobile", ".github/workflows/ci.yml", 3)).toBeNull()
+  })
+
+  it("matches the repo case-insensitively", () => {
+    expect(projectIdForWorkflowRun("Owner/Streamer", ".github/workflows/release.yml", 4)).toBe("tb-streamer")
   })
 })
