@@ -11,10 +11,18 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "cap:sync": "npx cap sync",
+    "cap:ios": "npx cap open ios",
+    "cap:android": "npx cap open android",
+    "cap:run:ios": "npx cap run ios",
+    "cap:run:android": "npx cap run android"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
     "@hookform/resolvers": "^5.4.0",
     "@neondatabase/serverless": "^1.1.0",
     "@phosphor-icons/react": "^2.1.10",
@@ -39,6 +47,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^7.0.0",
