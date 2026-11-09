@@ -43,3 +43,14 @@ next-env.d.ts
 # App Router route dirs that a global gitignore (history/) would otherwise swallow
 !app/history/
 !app/history/**
+
+# Capacitor / native
+android/.gradle/
+android/app/build/
+android/build/
+android/captures/
+android/local.properties
+ios/App/Pods/
+ios/App/App/public/
+*.xcuserstate
+xcuserdata/
